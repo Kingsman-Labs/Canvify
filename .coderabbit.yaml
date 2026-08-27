@@ -1,0 +1,62 @@
+# .coderabbit.yaml
+# Location: repository ROOT (same level as README.md) — NOT inside .github/workflows/
+# IMPORTANT: CodeRabbit reads this file from the PR's *base/target* branch.
+#            It must exist on BOTH `main` and `dev` (commit it to main, then
+#            merge/cherry-pick it into dev too) or reviews on dev will keep
+#            being skipped even after you add this file.
+
+reviews:
+  auto_review:
+    enabled: true
+
+    # main is reviewed automatically by default and does not need to be
+    # listed here. These are the *additional* branches to review:
+    base_branches:
+      - "dev"
+      - "feature/.*"
+      - "fix/.*"
+      - "hotfix/.*"
+
+    # Skip draft PRs — set to true if you want feedback while still in draft
+    drafts: false
+
+    # Re-review automatically on every new push to an open PR
+    auto_incremental_review: true
+
+    # After 5 reviewed commits on the same PR, pause auto-review to save
+    # your review quota — run `@coderabbitai review` manually after that
+    auto_pause_after_reviewed_commits: 5
+
+    # Skip PRs with these words in the title (case-insensitive)
+    ignore_title_keywords:
+      - "WIP"
+      - "[skip review]"
+
+    # Never review PRs opened by bots
+    ignore_usernames:
+      - "dependabot[bot]"
+      - "github-actions[bot]"
+
+  # Extra, targeted instructions CodeRabbit applies on top of its normal
+  # review for files matching these paths — tuned to Canvify's architecture
+  path_instructions:
+    - path: "backend/agents/**"
+      instructions: |
+        Check that each agent function reads only its declared inputs from
+        AgentState and writes only its own output key back to shared state.
+        Flag any direct agent-to-agent function call — all communication
+        must go through shared state (graph/state.py), never a direct call.
+
+    - path: "backend/api/gateway.py"
+      instructions: |
+        Verify all incoming input is length-checked and sanitized before it
+        reaches any agent. Flag any new endpoint that skips authentication
+        or rate-limit checks.
+
+    - path: "frontend/**/*.tsx"
+      instructions: |
+        Check for proper TypeScript typing (no implicit any). API calls
+        should go through lib/api.ts or lib/websocket.ts, not raw fetch
+        calls scattered in components.
+
+  tone_instructions: "Be concise. Prioritize correctness and security issues over style nitpicks."
