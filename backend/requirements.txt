@@ -1,0 +1,14 @@
+fastapi
+uvicorn[standard]
+langgraph
+langchain-anthropic
+anthropic
+tavily-python
+chromadb
+redis
+supabase
+plotly
+weasyprint
+python-dotenv
+pydantic
+websockets
